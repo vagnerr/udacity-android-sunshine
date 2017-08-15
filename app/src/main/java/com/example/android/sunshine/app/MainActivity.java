@@ -1,26 +1,60 @@
 package com.example.android.sunshine.app;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 
 
 public class MainActivity extends ActionBarActivity {
 
+    private static final String LOG_TAG = MainActivity.class.getSimpleName();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.v(LOG_TAG, "ON_CREATE");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
+                    .add(R.id.container, new ForecastFragment())
                     .commit();
         }
+    }
+
+    @Override
+    protected void onPause() {
+        Log.v(LOG_TAG, "ON_PAUSE");
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        Log.v(LOG_TAG, "ON_STOP");
+        super.onStop();
+    }
+
+    @Override
+    protected void onResume() {
+        Log.v(LOG_TAG, "ON_RESUME");
+        super.onResume();
+    }
+
+    @Override
+    protected void onStart() {
+        Log.v(LOG_TAG, "ON_START");
+        super.onStart();
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.v(LOG_TAG, "ON_DESTROY");
+        super.onDestroy();
     }
 
     @Override
@@ -39,25 +73,35 @@ public class MainActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
+            return true;
+        }
+        else if ( id == R.id.action_map) {
+
+            openPreferredLocationInMap();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
+    private void openPreferredLocationInMap() {
+        Intent intent = new Intent( Intent.ACTION_VIEW);
+        SharedPreferences pref =
+                PreferenceManager.getDefaultSharedPreferences(this);
+        String location = pref.getString(getString(R.string.pref_location_key), getString(R.string.pref_location_default));
 
-        public PlaceholderFragment() {
+        Uri geoLocation = Uri.parse("geo:0,0?").buildUpon()
+                                .appendQueryParameter("q", location)
+                                .build();
+
+        intent.setData(geoLocation);
+        if (intent.resolveActivity(getPackageManager()) != null ) {
+            startActivity(intent);
         }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            return rootView;
+        else {
+            Log.d("TAGTAG", "Coouldn;t call " + location + ", no recieiving apps");
         }
     }
+
 }
