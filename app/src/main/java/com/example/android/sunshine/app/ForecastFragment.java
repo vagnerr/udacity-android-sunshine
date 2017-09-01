@@ -36,6 +36,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.example.android.sunshine.app.data.WeatherContract;
+import com.example.android.sunshine.app.service.SunshineService;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -192,9 +193,11 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         getLoaderManager().restartLoader(FORECAST_LOADER,null,this);
     }
     private void updateWeather() {
-        FetchWeatherTask weatherTask = new FetchWeatherTask(getActivity());
-        String location = Utility.getPreferredLocation(getActivity());
-        weatherTask.execute(location);
+
+        Intent intent = new Intent(getActivity(), SunshineService.class);
+        intent.putExtra(SunshineService.LOCATION_QUERY_EXTRA,
+                            Utility.getPreferredLocation(getActivity()));
+        getActivity().startService(intent);
     }
 
 // Now handled by database + locationchanged code so no need to updateWeather all time
