@@ -15,6 +15,9 @@
  */
 package com.example.android.sunshine.app;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -37,6 +40,7 @@ import android.widget.ListView;
 
 import com.example.android.sunshine.app.data.WeatherContract;
 import com.example.android.sunshine.app.service.SunshineService;
+import com.example.android.sunshine.app.sync.SunshineSyncAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -194,10 +198,23 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     }
     private void updateWeather() {
 
-        Intent intent = new Intent(getActivity(), SunshineService.class);
-        intent.putExtra(SunshineService.LOCATION_QUERY_EXTRA,
-                            Utility.getPreferredLocation(getActivity()));
-        getActivity().startService(intent);
+
+
+//        Intent alarmIntent = new Intent(getActivity(),
+//                SunshineService.AlarmReceiver.class);
+//        alarmIntent.putExtra(SunshineService.LOCATION_QUERY_EXTRA,
+//                Utility.getPreferredLocation(getActivity()));
+//
+//        PendingIntent pi = PendingIntent.getBroadcast(getActivity(),
+//                0,
+//                alarmIntent,
+//                PendingIntent.FLAG_ONE_SHOT);  // getBroadcast(context,0,i,0);
+//
+//        AlarmManager am= (AlarmManager)getActivity().getSystemService(Context.ALARM_SERVICE);
+//
+//        am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 5000, pi);
+
+        SunshineSyncAdapter.syncImmediately(getActivity());
     }
 
 // Now handled by database + locationchanged code so no need to updateWeather all time
